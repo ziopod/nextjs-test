@@ -1,14 +1,24 @@
+import { GetStaticProps, GetStaticPaths } from "next"
+import Head from "next/head"
 import Layout from "../../components/layout"
 import { getAllPostIds, getPostData } from "../../lib/post"
 import Date from "../../components/date"
 import utilStyles from "../../styles/utils.module.css"
 
-export default function Post({ postData }) {
+export default function Post({
+  postData
+  }: {
+    postData: {
+      title: string
+      date: string
+      contentHtml: string
+    }
+  }) {
   return (
     <Layout>
-      <head>
+      <Head>
         <title>{postData.title}</title>
-      </head>
+      </Head>
       <article>
         <h1 className={utilStyles.headingXL}>{postData.title}</h1>
         <div className={utilStyles.lightText}>
@@ -21,7 +31,9 @@ export default function Post({ postData }) {
 }
 
 // Retourner la liste des valeurs possible pour `id`
-export async function getStaticPaths() {
+// TypeScript
+// export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   const paths = getAllPostIds()
   return {
     paths,
@@ -30,10 +42,12 @@ export async function getStaticPaths() {
 }
 
 // Récuperer les données necessaires pour l'article en utilisant `params.id`
-export async function getStaticProps({ params }) {
- const postData = await getPostData(params.id)
- return {
-  props: {
+//export async function getStaticProps({ params }) {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  if (! params) return { props: {} }
+  const postData = await getPostData(params.id as string)
+  return {
+    props: {
     postData
   }
  }
